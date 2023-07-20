@@ -20,7 +20,6 @@ ViewerApplication::ViewerApplication()
     , m_lightColor(0.0f)
     , m_lightIntensity(0.0f)
     , m_lightPosition(0.0f)
-    , m_specularExponentGrass(100.0f)
 {
 }
 
@@ -46,9 +45,6 @@ void ViewerApplication::Update()
 
     // Update camera controller
     UpdateCamera();
-
-    // Update specular exponent for grass material
-    m_model.GetMaterial(1).SetUniformValue("SpecularExponent", m_specularExponentGrass);
 }
 
 void ViewerApplication::Render()
@@ -122,14 +118,18 @@ void ViewerApplication::InitializeModel()
     loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
 
     // Load model
-    m_model = loader.Load("models/mill/Mill.obj");
+    m_model = loader.Load("models/mario/Mario.obj");
 
     // Load and set textures
     Texture2DLoader textureLoader(TextureObject::FormatRGBA, TextureObject::InternalFormatRGBA8);
     textureLoader.SetFlipVertical(true);
-    m_model.GetMaterial(0).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mill/Ground_shadow.jpg"));
-    m_model.GetMaterial(1).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mill/Ground_color.jpg"));
-    m_model.GetMaterial(2).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mill/MillCat_color.jpg"));
+    m_model.GetMaterial(0).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioBody_alb.png"));
+    m_model.GetMaterial(1).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioCap_alb.png"));
+    m_model.GetMaterial(2).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioEyePupil_alb.png"));
+    m_model.GetMaterial(5).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioFace_alb.png"));
+    m_model.GetMaterial(6).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHair_alb.png"));
+    m_model.GetMaterial(7).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHairFace_alb.png"));
+    m_model.GetMaterial(8).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHand_alb.png"));
 }
 
 void ViewerApplication::InitializeCamera()
@@ -161,8 +161,6 @@ void ViewerApplication::RenderGUI()
     ImGui::DragFloat3("Light position", &m_lightPosition[0], 0.1f);
     ImGui::ColorEdit3("Light color", &m_lightColor[0]);
     ImGui::DragFloat("Light intensity", &m_lightIntensity, 0.05f, 0.0f, 100.0f);
-    ImGui::Separator();
-    ImGui::DragFloat("Specular exponent (grass)", &m_specularExponentGrass, 1.0f, 0.0f, 1000.0f);
 
     m_imGui.EndFrame();
 }
