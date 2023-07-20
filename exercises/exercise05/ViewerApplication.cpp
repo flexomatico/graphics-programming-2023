@@ -11,7 +11,7 @@
 ViewerApplication::ViewerApplication()
     : Application(1024, 1024, "Viewer demo")
     , m_mousePosition(GetMainWindow().GetMousePosition(true))
-    , m_cameraPosition(0, 30, 30)
+    , m_cameraPosition(0, 10, 30)
     , m_cameraTranslationSpeed(20.0f)
     , m_cameraRotationSpeed(0.5f)
     , m_cameraEnabled(false)
@@ -54,7 +54,8 @@ void ViewerApplication::Render()
     // Clear color and depth
     GetDevice().Clear(true, Color(0.0f, 0.0f, 0.0f, 1.0f), true, 1.0f);
 
-    m_model.Draw();
+    m_modelMario.Draw();
+    m_modelFlag.Draw();
 
     // Render the debug user interface
     RenderGUI();
@@ -117,19 +118,36 @@ void ViewerApplication::InitializeModel()
     loader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
     loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
 
-    // Load model
-    m_model = loader.Load("models/mario/Mario.obj");
+    // Load Mario model
+    m_modelMario = loader.Load("models/mario/Mario.obj");
 
     // Load and set textures
     Texture2DLoader textureLoader(TextureObject::FormatRGBA, TextureObject::InternalFormatRGBA8);
     textureLoader.SetFlipVertical(true);
-    m_model.GetMaterial(0).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioBody_alb.png"));
-    m_model.GetMaterial(1).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioCap_alb.png"));
-    m_model.GetMaterial(2).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioEyePupil_alb.png"));
-    m_model.GetMaterial(5).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioFace_alb.png"));
-    m_model.GetMaterial(6).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHair_alb.png"));
-    m_model.GetMaterial(7).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHairFace_alb.png"));
-    m_model.GetMaterial(8).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHand_alb.png"));
+    m_modelMario.GetMaterial(0).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioBody_alb.png"));
+    m_modelMario.GetMaterial(1).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioCap_alb.png"));
+    m_modelMario.GetMaterial(2).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioEyePupil_alb.png"));
+    m_modelMario.GetMaterial(5).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioFace_alb.png"));
+    m_modelMario.GetMaterial(6).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHair_alb.png"));
+    m_modelMario.GetMaterial(7).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHairFace_alb.png"));
+    m_modelMario.GetMaterial(8).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/mario/MarioHand_alb.png"));
+
+    material->SetShaderSetupFunction([=](ShaderProgram& shaderProgram)
+        {
+            shaderProgram.SetUniform(worldMatrixLocation, glm::translate(glm::vec3(.0f, .0f, 15.0f)) * glm::scale(glm::vec3(0.1f)));
+            shaderProgram.SetUniform(viewProjMatrixLocation, m_camera.GetViewProjectionMatrix());
+
+            // Set camera and light uniforms
+            shaderProgram.SetUniform(ambientColorLocation, m_ambientColor);
+            shaderProgram.SetUniform(lightColorLocation, m_lightColor * m_lightIntensity);
+            shaderProgram.SetUniform(lightPositionLocation, m_lightPosition);
+            shaderProgram.SetUniform(cameraPositionLocation, m_cameraPosition);
+        });
+
+    // Load Flag model
+    m_modelFlag = loader.Load("models/flag/Flag.obj");
+    m_modelFlag.GetMaterial(0).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/flag/CheckpointFlagBody_alb.png"));
+    m_modelFlag.GetMaterial(1).SetUniformValue("ColorTexture", textureLoader.LoadShared("models/flag/CheckpointFlagMark_alb.1.png"));
 }
 
 void ViewerApplication::InitializeCamera()

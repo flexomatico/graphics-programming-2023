@@ -44,14 +44,12 @@ private:
     bool m_cameraEnablePressed;
 
     // Loaded model
-    Model m_model;
+    Model m_modelMario;
+    Model m_modelFlag;
 
     // Add light variables
     glm::vec3 m_ambientColor;
     glm::vec3 m_lightColor;
     float m_lightIntensity;
     glm::vec3 m_lightPosition;
-
-    // Specular exponent debug
-    float m_specularExponentGrass;
 };
