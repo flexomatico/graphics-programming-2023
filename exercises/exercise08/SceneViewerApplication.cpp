@@ -39,7 +39,8 @@ void SceneViewerApplication::Initialize()
 
     InitializeCamera();
     InitializeLights();
-    InitializeMaterial();
+    InitializeDefaultMaterial();
+    InitializeDitheredMaterial();
     InitializeModels();
     InitializeRenderer();
 }
@@ -109,7 +110,7 @@ void SceneViewerApplication::InitializeLights()
     //m_scene.AddSceneNode(std::make_shared<SceneLight>("point light", pointLight));
 }
 
-void SceneViewerApplication::InitializeMaterial()
+void SceneViewerApplication::InitializeDefaultMaterial()
 {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
@@ -163,6 +164,59 @@ void SceneViewerApplication::InitializeMaterial()
     m_defaultMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
 }
 
+void SceneViewerApplication::InitializeDitheredMaterial() {
+    // Load and build shader
+    std::vector<const char*> vertexShaderPaths;
+    vertexShaderPaths.push_back("shaders/version330.glsl");
+    vertexShaderPaths.push_back("shaders/default.vert");
+    Shader vertexShader = ShaderLoader(Shader::VertexShader).Load(vertexShaderPaths);
+
+    std::vector<const char*> fragmentShaderPaths;
+    fragmentShaderPaths.push_back("shaders/version330.glsl");
+    fragmentShaderPaths.push_back("shaders/utils.glsl");
+    fragmentShaderPaths.push_back("shaders/lambert-ggx.glsl");
+    fragmentShaderPaths.push_back("shaders/lighting.glsl");
+    fragmentShaderPaths.push_back("shaders/dithered_pbr.frag");
+    Shader fragmentShader = ShaderLoader(Shader::FragmentShader).Load(fragmentShaderPaths);
+
+    std::shared_ptr<ShaderProgram> shaderProgramPtr = std::make_shared<ShaderProgram>();
+    shaderProgramPtr->Build(vertexShader, fragmentShader);
+
+    // Get transform related uniform locations
+    ShaderProgram::Location cameraPositionLocation = shaderProgramPtr->GetUniformLocation("CameraPosition");
+    ShaderProgram::Location worldMatrixLocation = shaderProgramPtr->GetUniformLocation("WorldMatrix");
+    ShaderProgram::Location viewProjMatrixLocation = shaderProgramPtr->GetUniformLocation("ViewProjMatrix");
+
+    // Register shader with renderer
+    m_renderer.RegisterShaderProgram(shaderProgramPtr,
+        [=](const ShaderProgram& shaderProgram, const glm::mat4& worldMatrix, const Camera& camera, bool cameraChanged)
+        {
+            if (cameraChanged)
+            {
+                shaderProgram.SetUniform(cameraPositionLocation, camera.ExtractTranslation());
+                shaderProgram.SetUniform(viewProjMatrixLocation, camera.GetViewProjectionMatrix());
+            }
+            shaderProgram.SetUniform(worldMatrixLocation, worldMatrix);
+        },
+        m_renderer.GetDefaultUpdateLightsFunction(*shaderProgramPtr)
+    );
+
+    // Filter out uniforms that are not material properties
+    ShaderUniformCollection::NameSet filteredUniforms;
+    filteredUniforms.insert("CameraPosition");
+    filteredUniforms.insert("WorldMatrix");
+    filteredUniforms.insert("ViewProjMatrix");
+    filteredUniforms.insert("LightIndirect");
+    filteredUniforms.insert("LightColor");
+    filteredUniforms.insert("LightPosition");
+    filteredUniforms.insert("LightDirection");
+    filteredUniforms.insert("LightAttenuation");
+
+    // Create reference material
+    assert(shaderProgramPtr);
+    m_ditheredMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
+}
+
 void SceneViewerApplication::InitializeModels()
 {
     m_skyboxTexture = TextureCubemapLoader::LoadTextureShared("models/skybox/defaultCubemap.png", TextureObject::FormatRGB, TextureObject::InternalFormatSRGB8);
@@ -207,18 +261,40 @@ void SceneViewerApplication::InitializeModels()
     marioTransform->SetTranslation(glm::vec3(.0f, .0f, -2.0f));
     marioTransform->SetScale(glm::vec3(.01f));
 
-    // Load Flag model
-    std::shared_ptr<Model> flagModel = loader.LoadShared("models/flag/flag.obj");
-    m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
-    std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
-    flagTransform->SetScale(glm::vec3(.01f));
-
     // Load Environment model
     std::shared_ptr<Model> environmentModel = loader.LoadShared("models/environment/environment.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel));
     std::shared_ptr<Transform> environmentTransform = m_scene.GetSceneNode("Environment")->GetTransform();
     environmentTransform->SetTranslation(glm::vec3(.0f, -19.0f, .0f));
     environmentTransform->SetRotation(glm::vec3(.0f, -1.9f, .0f));
+
+    // Change to dithered material
+    loader.SetReferenceMaterial(m_ditheredMaterial);
+
+    m_ditheredMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
+
+    m_ditheredMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
+    m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
+    m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
+
+    // Link vertex properties to attributes
+    loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
+    loader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
+    loader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
+    loader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
+    loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
+
+    // Link material properties to uniforms
+    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
+    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
+    loader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
+    loader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
+
+    // Load Flag model
+    std::shared_ptr<Model> flagModel = loader.LoadShared("models/flag/flag.obj");
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
+    std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
+    flagTransform->SetScale(glm::vec3(.01f));
 }
 
 void SceneViewerApplication::InitializeRenderer()

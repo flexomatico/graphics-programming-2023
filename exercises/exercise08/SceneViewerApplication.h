@@ -24,7 +24,8 @@ protected:
 private:
     void InitializeCamera();
     void InitializeLights();
-    void InitializeMaterial();
+    void InitializeDefaultMaterial();
+    void InitializeDitheredMaterial();
     void InitializeModels();
     void InitializeRenderer();
 
@@ -48,4 +49,5 @@ private:
 
     // Default material
     std::shared_ptr<Material> m_defaultMaterial;
+    std::shared_ptr<Material> m_ditheredMaterial;
 };
