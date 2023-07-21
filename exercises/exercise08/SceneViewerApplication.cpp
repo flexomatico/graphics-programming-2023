@@ -200,18 +200,20 @@ void SceneViewerApplication::InitializeModels()
     loader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
     loader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 
-    // Load models
+    // Load Mario model
     std::shared_ptr<Model> marioModel = loader.LoadShared("models/mario/mario.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Mario", marioModel));
     std::shared_ptr<Transform> marioTransform = m_scene.GetSceneNode("Mario")->GetTransform();
     marioTransform->SetTranslation(glm::vec3(.0f, .0f, -2.0f));
     marioTransform->SetScale(glm::vec3(.01f));
 
+    // Load Flag model
     std::shared_ptr<Model> flagModel = loader.LoadShared("models/flag/flag.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
     std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
     flagTransform->SetScale(glm::vec3(.01f));
 
+    // Load Environment model
     std::shared_ptr<Model> environmentModel = loader.LoadShared("models/environment/environment.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel));
     std::shared_ptr<Transform> environmentTransform = m_scene.GetSceneNode("Environment")->GetTransform();
