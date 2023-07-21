@@ -1,0 +1,58 @@
+# Blender 3.3.1 MTL File: 'None'
+# www.blender.org
+
+newmtl CommonGateWhite
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+
+newmtl OUPBM_SnowOut00_SnowWallOut01.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd snowOut00_alb.png
+map_Kn snowout00_nrm.png
+map_Ns snowout00_rgh.png
+
+newmtl SnowIceOut03
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd snowIceOut03_alb.png
+map_Kn snowiceout03_nrm.png
+map_Ns snowiceout03_rgh.png
+
+newmtl SnowWallOut01.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd snowWallOut01_alb.png
+map_Kn snowwallout01_nrm.png
+map_Ns snowwallout01_rgh.png
+
+newmtl WoodParts09
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd woodParts09_alb.png

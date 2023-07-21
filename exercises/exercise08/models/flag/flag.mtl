@@ -1,0 +1,27 @@
+# Blender 3.3.1 MTL File: 'Flag.blend'
+# www.blender.org
+
+newmtl BodyMT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd CheckpointFlagBody_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns CheckpointFlagBody_rgh.png
+
+newmtl FlagMT
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd CheckpointFlagMark_alb.1.png
+map_Kn CheckpointFlagMark_nrm.1.png
+map_Ns white.png
+

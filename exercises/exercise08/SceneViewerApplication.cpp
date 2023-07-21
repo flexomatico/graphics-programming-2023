@@ -15,6 +15,7 @@
 #include <ituGL/shader/Material.h>
 #include <ituGL/geometry/Model.h>
 #include <ituGL/scene/SceneModel.h>
+#include <ituGL/scene/Transform.h>
 
 #include <ituGL/renderer/SkyboxRenderPass.h>
 #include <ituGL/renderer/ForwardRenderPass.h>
@@ -81,7 +82,7 @@ void SceneViewerApplication::InitializeCamera()
     // Create the main camera
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
     camera->SetViewMatrix(glm::vec3(-1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    camera->SetPerspectiveProjectionMatrix(1.0f, 1.0f, 0.1f, 100.0f);
+    camera->SetPerspectiveProjectionMatrix(1.0f, 1.0f, 0.1f, 1000.0f);
 
     // Create a scene node for the camera
     std::shared_ptr<SceneCamera> sceneCamera = std::make_shared<SceneCamera>("camera", camera);
@@ -200,17 +201,22 @@ void SceneViewerApplication::InitializeModels()
     loader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 
     // Load models
-    std::shared_ptr<Model> chestModel = loader.LoadShared("models/treasure_chest/treasure_chest.obj");
-    m_scene.AddSceneNode(std::make_shared<SceneModel>("treasure chest", chestModel));
+    std::shared_ptr<Model> marioModel = loader.LoadShared("models/mario/mario.obj");
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Mario", marioModel));
+    std::shared_ptr<Transform> marioTransform = m_scene.GetSceneNode("Mario")->GetTransform();
+    marioTransform->SetTranslation(glm::vec3(.0f, .0f, -2.0f));
+    marioTransform->SetScale(glm::vec3(.01f));
 
-    //std::shared_ptr<Model> cameraModel = loader.LoadShared("models/camera/camera.obj");
-    //m_scene.AddSceneNode(std::make_shared<SceneModel>("camera model", cameraModel));
+    std::shared_ptr<Model> flagModel = loader.LoadShared("models/flag/flag.obj");
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
+    std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
+    flagTransform->SetScale(glm::vec3(.01f));
 
-    //std::shared_ptr<Model> teaSetModel = loader.LoadShared("models/tea_set/tea_set.obj");
-    //m_scene.AddSceneNode(std::make_shared<SceneModel>("tea set", teaSetModel));
-
-    //std::shared_ptr<Model> clockModel = loader.LoadShared("models/alarm_clock/alarm_clock.obj");
-    //m_scene.AddSceneNode(std::make_shared<SceneModel>("alarm clock", clockModel));
+    std::shared_ptr<Model> environmentModel = loader.LoadShared("models/environment/environment.obj");
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel));
+    std::shared_ptr<Transform> environmentTransform = m_scene.GetSceneNode("Environment")->GetTransform();
+    environmentTransform->SetTranslation(glm::vec3(.0f, -19.0f, .0f));
+    environmentTransform->SetRotation(glm::vec3(.0f, -1.9f, .0f));
 }
 
 void SceneViewerApplication::InitializeRenderer()

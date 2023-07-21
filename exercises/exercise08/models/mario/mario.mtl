@@ -1,0 +1,134 @@
+# Blender 3.3.1 MTL File: 'Mario.blend'
+# www.blender.org
+
+newmtl BodyMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioBody_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl CapMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioCap_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl CaptainCapMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioCaptainCap_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl EyeBallMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioEyeBall_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl EyeMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioEye_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl EyePupilLeftMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd MarioEyePupil_alb.png
+map_d MarioEyePupil_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl EyePupilRightMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd MarioEyePupil_alb.png
+map_d MarioEyePupil_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl FaceMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioFace_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl HairFaceMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioHairFace_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl HairMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioHair_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
+
+newmtl HandMT
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd MarioHand_alb.png
+map_Kn CheckpointFlagBody_nrm.png
+map_Ns white.png
