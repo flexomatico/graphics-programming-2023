@@ -16,8 +16,15 @@ uniform sampler2D SpecularTexture;
 
 uniform vec3 CameraPosition;
 
+uniform float DitherThreshold;
+uniform float DitherScale;
+
 void main()
 {
+	bool keep = dither8x8(gl_FragCoord.xy, 0.5, 1.0);
+	if (!keep)
+		discard;
+
 	SurfaceData data;
 	data.normal = SampleNormalMap(NormalTexture, TexCoord, normalize(WorldNormal), normalize(WorldTangent), normalize(WorldBitangent));
 	data.albedo = Color * texture(ColorTexture, TexCoord).rgb;

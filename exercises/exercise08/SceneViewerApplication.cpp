@@ -176,6 +176,7 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
     fragmentShaderPaths.push_back("shaders/utils.glsl");
     fragmentShaderPaths.push_back("shaders/lambert-ggx.glsl");
     fragmentShaderPaths.push_back("shaders/lighting.glsl");
+    fragmentShaderPaths.push_back("shaders/bayer_matrix.glsl");
     fragmentShaderPaths.push_back("shaders/dithered_pbr.frag");
     Shader fragmentShader = ShaderLoader(Shader::FragmentShader).Load(fragmentShaderPaths);
 
@@ -230,7 +231,7 @@ void SceneViewerApplication::InitializeModels()
 
     m_defaultMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_defaultMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-    m_defaultMaterial->SetUniformValue("Color", glm::vec3(1.0f));
+    m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
 
     // Configure loader
     ModelLoader loader(m_defaultMaterial);
@@ -276,6 +277,9 @@ void SceneViewerApplication::InitializeModels()
     m_ditheredMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
     m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
+
+    m_ditheredMaterial->SetUniformValue("DitherThreshold", 0.5f);
+    m_ditheredMaterial->SetUniformValue("DitherScale", 1.0f);
 
     // Link vertex properties to attributes
     loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
