@@ -212,6 +212,8 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
     filteredUniforms.insert("LightPosition");
     filteredUniforms.insert("LightDirection");
     filteredUniforms.insert("LightAttenuation");
+    //filteredUniforms.insert("DitherThreshold");
+    //filteredUniforms.insert("DitherScale");
 
     // Create reference material
     assert(shaderProgramPtr);
@@ -227,11 +229,11 @@ void SceneViewerApplication::InitializeModels()
     m_skyboxTexture->GetParameter(TextureObject::ParameterFloat::MaxLod, maxLod);
     TextureCubemapObject::Unbind();
 
-    m_defaultMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
+    //m_defaultMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
 
     m_defaultMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_defaultMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-    m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
+    //m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
 
     // Configure loader
     ModelLoader loader(m_defaultMaterial);
@@ -269,17 +271,21 @@ void SceneViewerApplication::InitializeModels()
     environmentTransform->SetTranslation(glm::vec3(.0f, -19.0f, .0f));
     environmentTransform->SetRotation(glm::vec3(.0f, -1.9f, .0f));
 
-    // Change to dithered material
-    loader.SetReferenceMaterial(m_ditheredMaterial);
-
-    m_ditheredMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
+    //m_ditheredMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
 
     m_ditheredMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-    m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
+    //m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
 
-    m_ditheredMaterial->SetUniformValue("DitherThreshold", 0.5f);
-    m_ditheredMaterial->SetUniformValue("DitherScale", 1.0f);
+    m_ditheredMaterial->SetUniformValue("DitherThreshold", m_ditherThreshold);
+    //m_ditheredMaterial->SetUniformValue("DitherScale", 1.0f);
+    /*std::shared_ptr<ShaderProgram> ditherProgram = m_ditheredMaterial->GetShaderProgram();
+    ShaderProgram::Location ditherThresholdLocation = ditherProgram->GetUniformLocation("DitherThreshold");
+    ditherProgram->Use();
+    ditherProgram->SetUniform(ditherThresholdLocation, m_ditherThreshold);*/
+
+    // Change to dithered material
+    loader.SetReferenceMaterial(m_ditheredMaterial);
 
     // Link vertex properties to attributes
     loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");

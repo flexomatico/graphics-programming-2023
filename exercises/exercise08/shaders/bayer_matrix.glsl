@@ -1,8 +1,8 @@
 // Ordered dithering aka Bayer matrix dithering
 
-bool dither8x8(vec2 position, float DitherThreshold, float DitherScale) {
-	int x = int(mod(position.x * DitherScale, 8.0));
-	int y = int(mod(position.y * DitherScale, 8.0));
+bool dither8x8(vec2 position, float ditherThreshold, float ditherScale) {
+	int x = int(mod(position.x * ditherScale, 8.0));
+	int y = int(mod(position.y * ditherScale, 8.0));
 	int index = x + y * 8;
 	float limit = 0.0;
 
@@ -73,5 +73,5 @@ bool dither8x8(vec2 position, float DitherThreshold, float DitherScale) {
 		if (index == 63) limit = 0.34375;
  }
 
-  return DitherThreshold < limit ? false : true;
+  return ditherThreshold < limit ? false : true;
 }

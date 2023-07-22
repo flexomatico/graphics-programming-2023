@@ -51,6 +51,6 @@ private:
     std::shared_ptr<Material> m_defaultMaterial;
     std::shared_ptr<Material> m_ditheredMaterial;
 
-    float m_ditherThreshold = 1.0f;
+    float m_ditherThreshold = 0.5f;
     float m_ditherScale = 1.0f;
 };

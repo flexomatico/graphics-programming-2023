@@ -17,11 +17,11 @@ uniform sampler2D SpecularTexture;
 uniform vec3 CameraPosition;
 
 uniform float DitherThreshold;
-uniform float DitherScale;
+//uniform float DitherScale;
 
 void main()
 {
-	bool keep = dither8x8(gl_FragCoord.xy, 0.5, 1.0);
+	bool keep = dither8x8(gl_FragCoord.xy, DitherThreshold, 1);
 	if (!keep)
 		discard;
 
