@@ -233,6 +233,8 @@ void SceneViewerApplication::InitializeModels()
 
     m_defaultMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_defaultMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
+
+
     //m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
 
     // Configure loader
@@ -277,7 +279,7 @@ void SceneViewerApplication::InitializeModels()
     m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
     //m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
 
-    m_ditheredMaterial->SetUniformValue("DitherThreshold", m_ditherThreshold);
+    m_ditheredMaterial->SetUniformValue("DitherThreshold", 0.5f);
     //m_ditheredMaterial->SetUniformValue("DitherScale", 1.0f);
     /*std::shared_ptr<ShaderProgram> ditherProgram = m_ditheredMaterial->GetShaderProgram();
     ShaderProgram::Location ditherThresholdLocation = ditherProgram->GetUniformLocation("DitherThreshold");
