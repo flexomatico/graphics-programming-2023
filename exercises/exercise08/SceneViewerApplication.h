@@ -7,6 +7,8 @@
 #include <ituGL/camera/CameraController.h>
 #include <ituGL/utils/DearImGui.h>
 
+#include <map>
+
 class TextureCubemapObject;
 class Material;
 
@@ -14,6 +16,7 @@ class SceneViewerApplication : public Application
 {
 public:
     SceneViewerApplication();
+    std::map<std::string, float> GetDitherUniforms();
 
 protected:
     void Initialize() override;

@@ -19,10 +19,14 @@
 
 #include <ituGL/renderer/SkyboxRenderPass.h>
 #include <ituGL/renderer/ForwardRenderPass.h>
+#include "MarioDitherRenderPass.h"
 #include <ituGL/scene/RendererSceneVisitor.h>
 
 #include <ituGL/scene/ImGuiSceneVisitor.h>
 #include <imgui.h>
+
+#include <map>
+#include <string>
 
 SceneViewerApplication::SceneViewerApplication()
     : Application(1024, 1024, "Scene Viewer demo")
@@ -424,6 +428,7 @@ void SceneViewerApplication::InitializeModels()
 void SceneViewerApplication::InitializeRenderer()
 {
     m_renderer.AddRenderPass(std::make_unique<ForwardRenderPass>());
+    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>());
     m_renderer.AddRenderPass(std::make_unique<SkyboxRenderPass>(m_skyboxTexture));
 }
 
@@ -446,4 +451,14 @@ void SceneViewerApplication::RenderGUI()
     }
 
     m_imGui.EndFrame();
+}
+
+std::map<std::string, float> SceneViewerApplication::GetDitherUniforms()
+{
+    std::map<std::string, float> uniformMap;
+    uniformMap.insert(std::make_pair("ditherThreshold", m_ditherThreshold));
+    uniformMap.insert(std::make_pair("ditherScale", m_ditherScale));
+    uniformMap.insert(std::make_pair("marioDitherAmount", m_marioDitherAmount));
+    uniformMap.insert(std::make_pair("cameraFlagDistance", m_cameraFlagDistance));
+    return uniformMap;
 }
