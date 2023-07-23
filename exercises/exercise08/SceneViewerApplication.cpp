@@ -188,6 +188,10 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
     ShaderProgram::Location worldMatrixLocation = shaderProgramPtr->GetUniformLocation("WorldMatrix");
     ShaderProgram::Location viewProjMatrixLocation = shaderProgramPtr->GetUniformLocation("ViewProjMatrix");
 
+    // Get dither related uniform locations
+    ShaderProgram::Location ditherThresholdLocation = shaderProgramPtr->GetUniformLocation("DitherThreshold");
+    ShaderProgram::Location ditherScaleLocation = shaderProgramPtr->GetUniformLocation("DitherScale");
+
     // Register shader with renderer
     m_renderer.RegisterShaderProgram(shaderProgramPtr,
         [=](const ShaderProgram& shaderProgram, const glm::mat4& worldMatrix, const Camera& camera, bool cameraChanged)
@@ -198,6 +202,9 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
                 shaderProgram.SetUniform(viewProjMatrixLocation, camera.GetViewProjectionMatrix());
             }
             shaderProgram.SetUniform(worldMatrixLocation, worldMatrix);
+
+            shaderProgram.SetUniform(ditherThresholdLocation, m_ditherThreshold);
+            shaderProgram.SetUniform(ditherScaleLocation, m_ditherScale);
         },
         m_renderer.GetDefaultUpdateLightsFunction(*shaderProgramPtr)
     );
@@ -212,8 +219,8 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
     filteredUniforms.insert("LightPosition");
     filteredUniforms.insert("LightDirection");
     filteredUniforms.insert("LightAttenuation");
-    //filteredUniforms.insert("DitherThreshold");
-    //filteredUniforms.insert("DitherScale");
+    filteredUniforms.insert("DitherThreshold");
+    filteredUniforms.insert("DitherScale");
 
     // Create reference material
     assert(shaderProgramPtr);
@@ -233,7 +240,6 @@ void SceneViewerApplication::InitializeModels()
 
     m_defaultMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_defaultMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-
 
     //m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
 
@@ -279,31 +285,32 @@ void SceneViewerApplication::InitializeModels()
     m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
     //m_ditheredMaterial->SetUniformValue("Color", glm::vec3(1.0f));
 
-    m_ditheredMaterial->SetUniformValue("DitherThreshold", 0.5f);
-    //m_ditheredMaterial->SetUniformValue("DitherScale", 1.0f);
-    /*std::shared_ptr<ShaderProgram> ditherProgram = m_ditheredMaterial->GetShaderProgram();
-    ShaderProgram::Location ditherThresholdLocation = ditherProgram->GetUniformLocation("DitherThreshold");
-    ditherProgram->Use();
-    ditherProgram->SetUniform(ditherThresholdLocation, m_ditherThreshold);*/
-
     // Change to dithered material
-    loader.SetReferenceMaterial(m_ditheredMaterial);
+    //loader.SetReferenceMaterial(m_ditheredMaterial);
+    // Configure loader
+    ModelLoader flagLoader(m_ditheredMaterial);
+
+    // Create a new material copy for each submaterial
+    flagLoader.SetCreateMaterials(true);
+
+    // Flip vertically textures loaded by the model loader
+    flagLoader.GetTexture2DLoader().SetFlipVertical(true);
 
     // Link vertex properties to attributes
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
+    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
+    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
+    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
+    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
+    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
 
     // Link material properties to uniforms
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
+    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
+    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
+    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
+    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 
     // Load Flag model
-    std::shared_ptr<Model> flagModel = loader.LoadShared("models/flag/flag.obj");
+    std::shared_ptr<Model> flagModel = flagLoader.LoadShared("models/flag/flag.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
     std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
     flagTransform->SetScale(glm::vec3(.01f));
@@ -325,6 +332,12 @@ void SceneViewerApplication::RenderGUI()
 
     // Draw GUI for camera controller
     m_cameraController.DrawGUI(m_imGui);
+
+    if (auto window = m_imGui.UseWindow("Dither Settings"))
+    {
+        ImGui::SliderFloat("Dither Threshold", &m_ditherThreshold, 0.0f, 1.0f);
+        ImGui::SliderFloat("Dither Scale", &m_ditherScale, 0.0f, 1.0f);
+    }
 
     m_imGui.EndFrame();
 }
