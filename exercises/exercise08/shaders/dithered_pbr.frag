@@ -18,10 +18,17 @@ uniform vec3 CameraPosition;
 
 uniform float DitherThreshold;
 uniform float DitherScale;
+uniform float CameraObjectDistance;
+
+float map(float value, float min1, float max1, float min2, float max2) {
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
 
 void main()
 {
-	bool keep = dither8x8(gl_FragCoord.xy, DitherThreshold, DitherScale);
+	float clampedDistance = clamp(CameraObjectDistance, 0, DitherThreshold);
+	float mappedDistance01 = map(clampedDistance, 0, DitherThreshold, 0, 1); 
+	bool keep = dither8x8(gl_FragCoord.xy, mappedDistance01, DitherScale);
 	if (!keep)
 		discard;
 

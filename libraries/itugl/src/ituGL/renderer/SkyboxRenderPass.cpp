@@ -46,6 +46,7 @@ void SkyboxRenderPass::Render()
 
     // Only write to depth == 1
     glDepthFunc(GL_EQUAL);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
     const Mesh& fullscreenMesh = renderer.GetFullscreenMesh();
     fullscreenMesh.DrawSubmesh(0);

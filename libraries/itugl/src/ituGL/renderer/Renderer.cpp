@@ -24,6 +24,7 @@ Renderer::Renderer(DeviceGL& device)
 
     device.EnableFeature(GL_FRAMEBUFFER_SRGB);
     device.EnableFeature(GL_DEPTH_TEST);
+    device.EnableFeature(GL_STENCIL_TEST);
     device.EnableFeature(GL_CULL_FACE);
     device.EnableFeature(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     device.SetVSyncEnabled(true);
@@ -250,7 +251,7 @@ void Renderer::SetLightingRenderStates(bool firstPass)
     // Set the render states for the first and additional lights
     m_device.SetFeatureEnabled(GL_BLEND, !firstPass);
     // TODO: This should not be hardcoded here
-    glDepthFunc(firstPass ? GL_LESS : GL_EQUAL);
+    //glDepthFunc(firstPass ? GL_LESS : GL_EQUAL);
     glBlendFunc(GL_ONE, GL_ONE);
 }
 

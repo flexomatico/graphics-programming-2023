@@ -26,6 +26,7 @@ private:
     void InitializeLights();
     void InitializeDefaultMaterial();
     void InitializeDitheredMaterial();
+    void InitializeMarioMaterial();
     void InitializeModels();
     void InitializeRenderer();
 
@@ -50,7 +51,9 @@ private:
     // Default material
     std::shared_ptr<Material> m_defaultMaterial;
     std::shared_ptr<Material> m_ditheredMaterial;
+    std::shared_ptr<Material> m_marioMaterial;
 
-    float m_ditherThreshold = 0.5f;
+    float m_ditherThreshold = 3.0f;
     float m_ditherScale = 1.0f;
+    float m_cameraFlagDistance = 1.0f;
 };
