@@ -56,4 +56,5 @@ private:
     float m_ditherThreshold = 3.0f;
     float m_ditherScale = 1.0f;
     float m_cameraFlagDistance = 1.0f;
+    float m_marioDitherAmount = 0.8f;
 };

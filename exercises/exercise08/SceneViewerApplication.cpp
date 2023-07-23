@@ -268,6 +268,7 @@ void SceneViewerApplication::InitializeMarioMaterial()
     ShaderProgram::Location ditherThresholdLocation = shaderProgramPtr->GetUniformLocation("DitherThreshold");
     ShaderProgram::Location ditherScaleLocation = shaderProgramPtr->GetUniformLocation("DitherScale");
     ShaderProgram::Location camDistanceLocation = shaderProgramPtr->GetUniformLocation("CameraObjectDistance");
+    ShaderProgram::Location marioDitherLocation = shaderProgramPtr->GetUniformLocation("MarioDitherAmount");
 
     // Register shader with renderer
     m_renderer.RegisterShaderProgram(shaderProgramPtr,
@@ -283,6 +284,7 @@ void SceneViewerApplication::InitializeMarioMaterial()
             shaderProgram.SetUniform(ditherThresholdLocation, m_ditherThreshold);
             shaderProgram.SetUniform(ditherScaleLocation, m_ditherScale);
             shaderProgram.SetUniform(camDistanceLocation, m_cameraFlagDistance);
+            shaderProgram.SetUniform(marioDitherLocation, m_marioDitherAmount);
         },
         m_renderer.GetDefaultUpdateLightsFunction(*shaderProgramPtr)
     );
@@ -440,6 +442,7 @@ void SceneViewerApplication::RenderGUI()
     {
         ImGui::SliderFloat("Dither Threshold", &m_ditherThreshold, 0.0f, 10.0f);
         ImGui::SliderFloat("Dither Scale", &m_ditherScale, 0.0f, 1.0f);
+        ImGui::SliderFloat("Mario Dither Amount", &m_marioDitherAmount, 0.0f, 1.0f);
     }
 
     m_imGui.EndFrame();
