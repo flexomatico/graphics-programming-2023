@@ -241,7 +241,7 @@ void Renderer::PrepareDrawcall(const DrawcallInfo& drawcallInfo)
     // TODO: Room for optimization here, caching current material, current worldMatrixIndex and current VAO
 
     // Setup material
-    drawcallInfo.material.Use();
+    drawcallInfo.material.Use(Material::OverrideCulling);
 
     // Setup world matrix
     // Setup camera

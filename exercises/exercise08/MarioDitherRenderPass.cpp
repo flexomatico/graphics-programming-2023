@@ -26,11 +26,6 @@ void MarioDitherRenderPass::Render()
     // for all drawcalls
     for (const Renderer::DrawcallInfo& drawcallInfo : drawcallCollection)
     {
-        if (drawcallInfo.material.GetShaderProgram() != m_marioPbrMaterial.GetShaderProgram())
-        {
-            //continue;
-        }
-
         m_marioDitherMaterial.Use();
 
         // Prepare drawcall states

@@ -311,7 +311,7 @@ void SceneViewerApplication::InitializeMarioMaterial()
     // Create reference material
     assert(shaderProgramPtr);
     m_marioMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
-    m_marioMaterial->SetDepthTestFunction(Material::TestFunction::Greater);
+    m_marioMaterial->SetDepthTestFunction(Material::TestFunction::NotEqual);
     m_marioMaterial->SetStencilTestFunction(Material::TestFunction::Equal, 1, 0xFF);
     m_marioMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
 }
@@ -319,6 +319,7 @@ void SceneViewerApplication::InitializeMarioMaterial()
 void SceneViewerApplication::InitializeMarioPbrMaterial()
 {
     m_marioPbrMaterial = std::make_shared<Material>(*m_defaultMaterial);
+    m_marioPbrMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Zero);
 }
 
 void SceneViewerApplication::InitializeModels()
