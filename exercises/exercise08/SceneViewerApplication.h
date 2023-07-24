@@ -16,7 +16,6 @@ class SceneViewerApplication : public Application
 {
 public:
     SceneViewerApplication();
-    std::map<std::string, float> GetDitherUniforms();
 
 protected:
     void Initialize() override;
@@ -30,6 +29,7 @@ private:
     void InitializeDefaultMaterial();
     void InitializeDitheredMaterial();
     void InitializeMarioMaterial();
+    void InitializeMarioPbrMaterial();
     void InitializeModels();
     void InitializeRenderer();
 
@@ -55,6 +55,7 @@ private:
     std::shared_ptr<Material> m_defaultMaterial;
     std::shared_ptr<Material> m_ditheredMaterial;
     std::shared_ptr<Material> m_marioMaterial;
+    std::shared_ptr<Material> m_marioPbrMaterial;
 
     float m_ditherThreshold = 3.0f;
     float m_ditherScale = 1.0f;

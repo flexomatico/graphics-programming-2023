@@ -46,6 +46,7 @@ void SceneViewerApplication::Initialize()
     InitializeDefaultMaterial();
     InitializeDitheredMaterial();
     InitializeMarioMaterial();
+    InitializeMarioPbrMaterial();
     InitializeModels();
     InitializeRenderer();
 }
@@ -315,6 +316,11 @@ void SceneViewerApplication::InitializeMarioMaterial()
     m_marioMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
 }
 
+void SceneViewerApplication::InitializeMarioPbrMaterial()
+{
+    m_marioPbrMaterial = std::make_shared<Material>(*m_defaultMaterial);
+}
+
 void SceneViewerApplication::InitializeModels()
 {
     m_skyboxTexture = TextureCubemapLoader::LoadTextureShared("models/skybox/defaultCubemap.png", TextureObject::FormatRGB, TextureObject::InternalFormatSRGB8);
@@ -391,11 +397,11 @@ void SceneViewerApplication::InitializeModels()
     std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
     flagTransform->SetScale(glm::vec3(.01f));
 
-    m_marioMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
-    m_marioMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
+    m_marioPbrMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
+    m_marioPbrMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
    
     // Configure loader
-    ModelLoader marioLoader(m_marioMaterial);
+    ModelLoader marioLoader(m_marioPbrMaterial);
     
     // Create a new material copy for each submaterial
     marioLoader.SetCreateMaterials(true);
@@ -428,7 +434,7 @@ void SceneViewerApplication::InitializeModels()
 void SceneViewerApplication::InitializeRenderer()
 {
     m_renderer.AddRenderPass(std::make_unique<ForwardRenderPass>());
-    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>());
+    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(0, *m_marioMaterial, *m_marioPbrMaterial));
     m_renderer.AddRenderPass(std::make_unique<SkyboxRenderPass>(m_skyboxTexture));
 }
 
@@ -451,14 +457,4 @@ void SceneViewerApplication::RenderGUI()
     }
 
     m_imGui.EndFrame();
-}
-
-std::map<std::string, float> SceneViewerApplication::GetDitherUniforms()
-{
-    std::map<std::string, float> uniformMap;
-    uniformMap.insert(std::make_pair("ditherThreshold", m_ditherThreshold));
-    uniformMap.insert(std::make_pair("ditherScale", m_ditherScale));
-    uniformMap.insert(std::make_pair("marioDitherAmount", m_marioDitherAmount));
-    uniformMap.insert(std::make_pair("cameraFlagDistance", m_cameraFlagDistance));
-    return uniformMap;
 }
