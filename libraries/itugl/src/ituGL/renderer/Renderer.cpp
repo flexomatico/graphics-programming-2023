@@ -24,7 +24,7 @@ Renderer::Renderer(DeviceGL& device)
 
     device.EnableFeature(GL_FRAMEBUFFER_SRGB);
     device.EnableFeature(GL_DEPTH_TEST);
-    device.EnableFeature(GL_CULL_FACE);
+    //device.EnableFeature(GL_CULL_FACE);
     device.EnableFeature(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     device.SetVSyncEnabled(true);
 }
