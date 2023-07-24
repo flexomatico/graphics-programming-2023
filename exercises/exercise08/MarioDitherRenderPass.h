@@ -7,7 +7,7 @@
 class MarioDitherRenderPass : public RenderPass
 {
 public:
-	MarioDitherRenderPass(int drawcallCollectionIndex, Material& marioDitherMaterial, Material& marioPbrMaterial);
+	MarioDitherRenderPass(int drawcallCollectionIndex, Material& marioDitherMaterial);
 
 	void Render() override;
 
@@ -15,6 +15,5 @@ private:
 	int m_drawcallCollectionIndex;
 
 	Material m_marioDitherMaterial;
-	Material m_marioPbrMaterial;
 };
 

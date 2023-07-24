@@ -10,10 +10,9 @@
 #include <ituGL/shader/ShaderProgram.h>
 #include <iostream>
 
-MarioDitherRenderPass::MarioDitherRenderPass(int drawcallCollectionIndex, Material& marioDitherMaterial, Material& marioPbrMaterial)
+MarioDitherRenderPass::MarioDitherRenderPass(int drawcallCollectionIndex, Material& marioDitherMaterial)
     : m_drawcallCollectionIndex(drawcallCollectionIndex)
     , m_marioDitherMaterial(marioDitherMaterial)
-    , m_marioPbrMaterial(marioPbrMaterial)
 {
 }
 

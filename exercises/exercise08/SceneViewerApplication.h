@@ -6,6 +6,7 @@
 #include <ituGL/renderer/Renderer.h>
 #include <ituGL/camera/CameraController.h>
 #include <ituGL/utils/DearImGui.h>
+#include <ituGL/asset/ModelLoader.h>
 
 #include <map>
 
@@ -27,9 +28,10 @@ private:
     void InitializeCamera();
     void InitializeLights();
     void InitializeDefaultMaterial();
-    void InitializeDitheredMaterial();
-    void InitializeMarioMaterial();
+    void InitializeFlagDitherMaterial();
+    void InitializeMarioDitherMaterial();
     void InitializeMarioPbrMaterial();
+    void PrepareLoaderAttributes(ModelLoader* loader);
     void InitializeModels();
     void InitializeRenderer();
 
@@ -53,8 +55,8 @@ private:
 
     // Default material
     std::shared_ptr<Material> m_defaultMaterial;
-    std::shared_ptr<Material> m_ditheredMaterial;
-    std::shared_ptr<Material> m_marioMaterial;
+    std::shared_ptr<Material> m_flagDitherMaterial;
+    std::shared_ptr<Material> m_marioDitherMaterial;
     std::shared_ptr<Material> m_marioPbrMaterial;
 
     float m_ditherThreshold = 3.0f;

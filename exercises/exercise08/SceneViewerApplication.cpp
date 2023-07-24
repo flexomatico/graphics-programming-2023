@@ -41,11 +41,14 @@ void SceneViewerApplication::Initialize()
     // Initialize DearImGUI
     m_imGui.Initialize(GetMainWindow());
 
+    // Enable Stencil Test
+    GetDevice().EnableFeature(GL_STENCIL_TEST);
+
     InitializeCamera();
     InitializeLights();
     InitializeDefaultMaterial();
-    InitializeDitheredMaterial();
-    InitializeMarioMaterial();
+    InitializeFlagDitherMaterial();
+    InitializeMarioDitherMaterial();
     InitializeMarioPbrMaterial();
     InitializeModels();
     InitializeRenderer();
@@ -58,6 +61,7 @@ void SceneViewerApplication::Update()
     // Update camera controller
     m_cameraController.Update(GetMainWindow(), GetDeltaTime());
 
+    // Update camera to flag distance
     glm::vec3 camPos = m_scene.GetSceneNode("camera")->GetTransform()->GetTranslation();
     glm::vec3 flagPos = m_scene.GetSceneNode("Flag")->GetTransform()->GetTranslation();
     m_cameraFlagDistance = glm::distance(camPos, flagPos);
@@ -112,12 +116,6 @@ void SceneViewerApplication::InitializeLights()
     directionalLight->SetDirection(glm::vec3(-0.3f, -1.0f, -0.3f)); // It will be normalized inside the function
     directionalLight->SetIntensity(3.0f);
     m_scene.AddSceneNode(std::make_shared<SceneLight>("directional light", directionalLight));
-
-    // Create a point light and add it to the scene
-    //std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>();
-    //pointLight->SetPosition(glm::vec3(0, 0, 0));
-    //pointLight->SetDistanceAttenuation(glm::vec2(5.0f, 10.0f));
-    //m_scene.AddSceneNode(std::make_shared<SceneLight>("point light", pointLight));
 }
 
 void SceneViewerApplication::InitializeDefaultMaterial()
@@ -175,7 +173,7 @@ void SceneViewerApplication::InitializeDefaultMaterial()
     m_defaultMaterial->SetStencilTestFunction(Material::TestFunction::Always, 1, 0xFF);
 }
 
-void SceneViewerApplication::InitializeDitheredMaterial() {
+void SceneViewerApplication::InitializeFlagDitherMaterial() {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
     vertexShaderPaths.push_back("shaders/version330.glsl");
@@ -185,6 +183,7 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
     std::vector<const char*> fragmentShaderPaths;
     fragmentShaderPaths.push_back("shaders/version330.glsl");
     fragmentShaderPaths.push_back("shaders/utils.glsl");
+    fragmentShaderPaths.push_back("shaders/map.glsl");
     fragmentShaderPaths.push_back("shaders/lambert-ggx.glsl");
     fragmentShaderPaths.push_back("shaders/lighting.glsl");
     fragmentShaderPaths.push_back("shaders/bayer_matrix.glsl");
@@ -238,13 +237,14 @@ void SceneViewerApplication::InitializeDitheredMaterial() {
 
     // Create reference material
     assert(shaderProgramPtr);
-    m_ditheredMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
+    m_flagDitherMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
 
-    m_ditheredMaterial->SetStencilTestFunction(Material::TestFunction::Always, 1, 0xFF);
-    m_ditheredMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Replace);
+    // Set Depth and Stencil functions
+    m_flagDitherMaterial->SetStencilTestFunction(Material::TestFunction::Always, 1, 0xFF);
+    m_flagDitherMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Replace);
 }
 
-void SceneViewerApplication::InitializeMarioMaterial()
+void SceneViewerApplication::InitializeMarioDitherMaterial()
 {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
@@ -254,11 +254,9 @@ void SceneViewerApplication::InitializeMarioMaterial()
 
     std::vector<const char*> fragmentShaderPaths;
     fragmentShaderPaths.push_back("shaders/version330.glsl");
-    fragmentShaderPaths.push_back("shaders/utils.glsl");
-    fragmentShaderPaths.push_back("shaders/lambert-ggx.glsl");
-    fragmentShaderPaths.push_back("shaders/lighting.glsl");
+    fragmentShaderPaths.push_back("shaders/map.glsl");
     fragmentShaderPaths.push_back("shaders/bayer_matrix.glsl");
-    fragmentShaderPaths.push_back("shaders/mario_pbr.frag");
+    fragmentShaderPaths.push_back("shaders/mario_dithered.frag");
     Shader fragmentShader = ShaderLoader(Shader::FragmentShader).Load(fragmentShaderPaths);
 
     std::shared_ptr<ShaderProgram> shaderProgramPtr = std::make_shared<ShaderProgram>();
@@ -299,27 +297,46 @@ void SceneViewerApplication::InitializeMarioMaterial()
     filteredUniforms.insert("CameraPosition");
     filteredUniforms.insert("WorldMatrix");
     filteredUniforms.insert("ViewProjMatrix");
-    filteredUniforms.insert("LightIndirect");
-    filteredUniforms.insert("LightColor");
-    filteredUniforms.insert("LightPosition");
-    filteredUniforms.insert("LightDirection");
-    filteredUniforms.insert("LightAttenuation");
     filteredUniforms.insert("DitherThreshold");
     filteredUniforms.insert("DitherScale");
     filteredUniforms.insert("CameraObjectDistance");
 
     // Create reference material
     assert(shaderProgramPtr);
-    m_marioMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
-    m_marioMaterial->SetDepthTestFunction(Material::TestFunction::NotEqual);
-    m_marioMaterial->SetStencilTestFunction(Material::TestFunction::Equal, 1, 0xFF);
-    m_marioMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
+    m_marioDitherMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
+
+    // Set Depth and Stencil Functions
+    m_marioDitherMaterial->SetDepthTestFunction(Material::TestFunction::NotEqual);
+    m_marioDitherMaterial->SetStencilTestFunction(Material::TestFunction::Equal, 1, 0xFF);
+    m_marioDitherMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
 }
 
 void SceneViewerApplication::InitializeMarioPbrMaterial()
 {
     m_marioPbrMaterial = std::make_shared<Material>(*m_defaultMaterial);
     m_marioPbrMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Zero);
+}
+
+void SceneViewerApplication::PrepareLoaderAttributes(ModelLoader* loader)
+{
+    // Create a new material copy for each submaterial
+    loader->SetCreateMaterials(true);
+
+    // Flip vertically textures loaded by the model loader
+    loader->GetTexture2DLoader().SetFlipVertical(true);
+          
+    // Link vertex properties to attributes
+    loader->SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
+    loader->SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
+    loader->SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
+    loader->SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
+    loader->SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
+          
+    // Link material properties to uniforms
+    loader->SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
+    loader->SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
+    loader->SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
+    loader->SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 }
 
 void SceneViewerApplication::InitializeModels()
@@ -331,66 +348,31 @@ void SceneViewerApplication::InitializeModels()
     m_skyboxTexture->GetParameter(TextureObject::ParameterFloat::MaxLod, maxLod);
     TextureCubemapObject::Unbind();
 
-    //m_defaultMaterial->SetUniformValue("AmbientColor", glm::vec3(0.25f));
-
     m_defaultMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
     m_defaultMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
 
-    //m_defaultMaterial->SetUniformValue("Color", glm::vec3(0.0f));
+    m_flagDitherMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
+    m_flagDitherMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
 
-    // Configure loader
-    ModelLoader loader(m_defaultMaterial);
+    m_marioPbrMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
+    m_marioPbrMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
 
-    // Create a new material copy for each submaterial
-    loader.SetCreateMaterials(true);
-
-    // Flip vertically textures loaded by the model loader
-    loader.GetTexture2DLoader().SetFlipVertical(true);
-
-    // Link vertex properties to attributes
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
-    loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
-
-    // Link material properties to uniforms
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
-    loader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
+    // Configure Environment loader
+    ModelLoader environmentLoader(m_defaultMaterial);
+    PrepareLoaderAttributes(&environmentLoader);
+    // Configure Flag loader
+    ModelLoader flagLoader(m_flagDitherMaterial);
+    PrepareLoaderAttributes(&flagLoader);
+    // Configure Mario loader
+    ModelLoader marioLoader(m_marioPbrMaterial);
+    PrepareLoaderAttributes(&marioLoader);
 
     // Load Environment model
-    std::shared_ptr<Model> environmentModel = loader.LoadShared("models/environment/environment.obj");
+    std::shared_ptr<Model> environmentModel = environmentLoader.LoadShared("models/environment/environment.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel, std::vector<int>{0}));
     std::shared_ptr<Transform> environmentTransform = m_scene.GetSceneNode("Environment")->GetTransform();
     environmentTransform->SetTranslation(glm::vec3(.0f, -19.0f, .0f));
     environmentTransform->SetRotation(glm::vec3(.0f, -1.9f, .0f));
-
-    m_ditheredMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
-    m_ditheredMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-
-    // Configure loader
-    ModelLoader flagLoader(m_ditheredMaterial);
-
-    // Create a new material copy for each submaterial
-    flagLoader.SetCreateMaterials(true);
-
-    // Flip vertically textures loaded by the model loader
-    flagLoader.GetTexture2DLoader().SetFlipVertical(true);
-
-    // Link vertex properties to attributes
-    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
-    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
-    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
-    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
-    flagLoader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
-
-    // Link material properties to uniforms
-    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
-    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
-    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
-    flagLoader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 
     // Load Flag model
     std::shared_ptr<Model> flagModel = flagLoader.LoadShared("models/flag/flag.obj");
@@ -398,44 +380,18 @@ void SceneViewerApplication::InitializeModels()
     std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
     flagTransform->SetScale(glm::vec3(.01f));
 
-    m_marioPbrMaterial->SetUniformValue("EnvironmentTexture", m_skyboxTexture);
-    m_marioPbrMaterial->SetUniformValue("EnvironmentMaxLod", maxLod);
-   
-    // Configure loader
-    ModelLoader marioLoader(m_marioPbrMaterial);
-    
-    // Create a new material copy for each submaterial
-    marioLoader.SetCreateMaterials(true);
-
-    // Flip vertically textures loaded by the model loader
-    marioLoader.GetTexture2DLoader().SetFlipVertical(true);
-
-    // Link vertex properties to attributes
-    marioLoader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
-    marioLoader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
-    marioLoader.SetMaterialAttribute(VertexAttribute::Semantic::Tangent, "VertexTangent");
-    marioLoader.SetMaterialAttribute(VertexAttribute::Semantic::Bitangent, "VertexBitangent");
-    marioLoader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
-
-    // Link material properties to uniforms
-    marioLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseColor, "Color");
-    marioLoader.SetMaterialProperty(ModelLoader::MaterialProperty::DiffuseTexture, "ColorTexture");
-    marioLoader.SetMaterialProperty(ModelLoader::MaterialProperty::NormalTexture, "NormalTexture");
-    marioLoader.SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
-
     // Load Mario model
     std::shared_ptr<Model> marioModel = marioLoader.LoadShared("models/mario/mario.obj");
     m_scene.AddSceneNode(std::make_shared<SceneModel>("Mario", marioModel, std::vector<int>{0, 1}));
     std::shared_ptr<Transform> marioTransform = m_scene.GetSceneNode("Mario")->GetTransform();
     marioTransform->SetTranslation(glm::vec3(.0f, .0f, -2.0f));
     marioTransform->SetScale(glm::vec3(.01f));
-
 }
 
 void SceneViewerApplication::InitializeRenderer()
 {
     m_renderer.AddRenderPass(std::make_unique<ForwardRenderPass>());
-    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(1, *m_marioMaterial, *m_marioPbrMaterial));
+    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(1, *m_marioDitherMaterial));
     m_renderer.AddRenderPass(std::make_unique<SkyboxRenderPass>(m_skyboxTexture));
 }
 
@@ -450,6 +406,7 @@ void SceneViewerApplication::RenderGUI()
     // Draw GUI for camera controller
     m_cameraController.DrawGUI(m_imGui);
 
+    // Draw GUI for dither settings
     if (auto window = m_imGui.UseWindow("Dither Settings"))
     {
         ImGui::SliderFloat("Dither Threshold", &m_ditherThreshold, 0.0f, 10.0f);
