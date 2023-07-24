@@ -24,5 +24,5 @@ void RendererSceneVisitor::VisitLight(SceneLight& sceneLight)
 void RendererSceneVisitor::VisitModel(SceneModel& sceneModel)
 {
     assert(sceneModel.GetTransform());
-    m_renderer.AddModel(*sceneModel.GetModel(), sceneModel.GetTransform()->GetTransformMatrix());
+    m_renderer.AddModel(*sceneModel.GetModel(), sceneModel.GetTransform()->GetTransformMatrix(), sceneModel.GetDrawCallCollectionIndeces());
 }

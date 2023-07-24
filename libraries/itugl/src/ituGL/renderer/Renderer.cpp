@@ -18,7 +18,7 @@ Renderer::Renderer(DeviceGL& device)
     , m_currentCamera(nullptr)
     , m_defaultFramebuffer(FramebufferObject::GetDefault())
     , m_currentFramebuffer(m_defaultFramebuffer)
-    , m_drawcallCollections(1)
+    , m_drawcallCollections(2)
 {
     InitializeFullscreenMesh();
 
@@ -211,7 +211,7 @@ std::span<const Renderer::DrawcallInfo> Renderer::GetDrawcalls(unsigned int coll
     return m_drawcallCollections[collectionIndex];
 }
 
-void Renderer::AddModel(const Model& model, const glm::mat4& worldMatrix)
+void Renderer::AddModel(const Model& model, const glm::mat4& worldMatrix, const std::vector<int> drawCallCollectionIndeces)
 {
     unsigned int worldMatrixIndex = static_cast<unsigned int>(m_worldMatrices.size());
     m_worldMatrices.push_back(worldMatrix);
@@ -222,9 +222,14 @@ void Renderer::AddModel(const Model& model, const glm::mat4& worldMatrix)
         DrawcallInfo drawcallInfo(model.GetMaterial(submeshIndex), worldMatrixIndex,
             mesh.GetSubmeshVertexArray(submeshIndex), mesh.GetSubmeshDrawcall(submeshIndex));
 
-        for (DrawcallCollection& collection : m_drawcallCollections)
+        /*for (DrawcallCollection& collection : m_drawcallCollections)
         {
             collection.push_back(drawcallInfo);
+        }*/
+
+        for (int i : drawCallCollectionIndeces)
+        {
+            m_drawcallCollections.at(i).push_back(drawcallInfo);
         }
     }
 }

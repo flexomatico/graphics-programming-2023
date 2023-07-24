@@ -61,7 +61,7 @@ public:
     void AddLight(const Light& light);
 
     std::span<const DrawcallInfo> GetDrawcalls(unsigned int collectionIndex) const;
-    void AddModel(const Model& model, const glm::mat4& worldMatrix);
+    void AddModel(const Model& model, const glm::mat4& worldMatrix, const std::vector<int> drawCallCollectionIndeces);
 
     const Mesh& GetFullscreenMesh() const;
 

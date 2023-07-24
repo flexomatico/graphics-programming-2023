@@ -311,7 +311,7 @@ void SceneViewerApplication::InitializeMarioMaterial()
     // Create reference material
     assert(shaderProgramPtr);
     m_marioMaterial = std::make_shared<Material>(shaderProgramPtr, filteredUniforms);
-    m_marioMaterial->SetDepthTestFunction(Material::TestFunction::Always);
+    m_marioMaterial->SetDepthTestFunction(Material::TestFunction::Greater);
     m_marioMaterial->SetStencilTestFunction(Material::TestFunction::Equal, 1, 0xFF);
     m_marioMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
 }
@@ -361,7 +361,7 @@ void SceneViewerApplication::InitializeModels()
 
     // Load Environment model
     std::shared_ptr<Model> environmentModel = loader.LoadShared("models/environment/environment.obj");
-    m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel));
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Environment", environmentModel, std::vector<int>{0}));
     std::shared_ptr<Transform> environmentTransform = m_scene.GetSceneNode("Environment")->GetTransform();
     environmentTransform->SetTranslation(glm::vec3(.0f, -19.0f, .0f));
     environmentTransform->SetRotation(glm::vec3(.0f, -1.9f, .0f));
@@ -393,7 +393,7 @@ void SceneViewerApplication::InitializeModels()
 
     // Load Flag model
     std::shared_ptr<Model> flagModel = flagLoader.LoadShared("models/flag/flag.obj");
-    m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel));
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Flag", flagModel, std::vector<int>{0}));
     std::shared_ptr<Transform> flagTransform = m_scene.GetSceneNode("Flag")->GetTransform();
     flagTransform->SetScale(glm::vec3(.01f));
 
@@ -424,7 +424,7 @@ void SceneViewerApplication::InitializeModels()
 
     // Load Mario model
     std::shared_ptr<Model> marioModel = marioLoader.LoadShared("models/mario/mario.obj");
-    m_scene.AddSceneNode(std::make_shared<SceneModel>("Mario", marioModel));
+    m_scene.AddSceneNode(std::make_shared<SceneModel>("Mario", marioModel, std::vector<int>{0, 1}));
     std::shared_ptr<Transform> marioTransform = m_scene.GetSceneNode("Mario")->GetTransform();
     marioTransform->SetTranslation(glm::vec3(.0f, .0f, -2.0f));
     marioTransform->SetScale(glm::vec3(.01f));
@@ -434,7 +434,7 @@ void SceneViewerApplication::InitializeModels()
 void SceneViewerApplication::InitializeRenderer()
 {
     m_renderer.AddRenderPass(std::make_unique<ForwardRenderPass>());
-    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(0, *m_marioMaterial, *m_marioPbrMaterial));
+    m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(1, *m_marioMaterial, *m_marioPbrMaterial));
     m_renderer.AddRenderPass(std::make_unique<SkyboxRenderPass>(m_skyboxTexture));
 }
 

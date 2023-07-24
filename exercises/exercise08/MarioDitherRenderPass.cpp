@@ -28,7 +28,7 @@ void MarioDitherRenderPass::Render()
     {
         if (drawcallInfo.material.GetShaderProgram() != m_marioPbrMaterial.GetShaderProgram())
         {
-            continue;
+            //continue;
         }
 
         m_marioDitherMaterial.Use();

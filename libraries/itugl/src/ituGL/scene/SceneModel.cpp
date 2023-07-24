@@ -6,7 +6,7 @@
 #include <ituGL/scene/SceneVisitor.h>
 #include <cassert>
 
-SceneModel::SceneModel(const std::string& name, std::shared_ptr<Model> model) : SceneNode(name), m_model(model)
+SceneModel::SceneModel(const std::string& name, std::shared_ptr<Model> model, std::vector<int> drawCallCollectionIndeces) : SceneNode(name), m_model(model), m_drawCallCollectionIndeces(drawCallCollectionIndeces)
 {
 }
 
@@ -70,4 +70,9 @@ void SceneModel::AcceptVisitor(SceneVisitor& visitor) const
 {
     visitor.VisitModel(*this);
     //visitor.VisitRenderable(*this);
+}
+
+std::vector<int> SceneModel::GetDrawCallCollectionIndeces()
+{
+    return m_drawCallCollectionIndeces;
 }

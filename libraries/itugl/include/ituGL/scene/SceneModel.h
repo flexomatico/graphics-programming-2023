@@ -2,13 +2,14 @@
 
 #include <ituGL/scene/SceneNode.h>
 //#include <ituGL/renderer/Renderable.h>
+#include <vector>
 
 class Model;
 
 class SceneModel : public SceneNode//, public Renderable
 {
 public:
-    SceneModel(const std::string& name, std::shared_ptr<Model> model);
+    SceneModel(const std::string& name, std::shared_ptr<Model> model, std::vector<int> drawCallCollectionIndeces);
     SceneModel(const std::string& name, std::shared_ptr<Model> model, std::shared_ptr<Transform> transform);
 
     std::shared_ptr<Model> GetModel() const;
@@ -25,6 +26,9 @@ public:
     void AcceptVisitor(SceneVisitor& visitor) override;
     void AcceptVisitor(SceneVisitor& visitor) const override;
 
+    std::vector<int> GetDrawCallCollectionIndeces();
+
 private:
     std::shared_ptr<Model> m_model;
+    std::vector<int> m_drawCallCollectionIndeces;
 };
