@@ -1,4 +1,4 @@
-#include "SceneViewerApplication.h"
+#include "MarioDitherDemo.h"
 
 #include <ituGL/asset/TextureCubemapLoader.h>
 #include <ituGL/asset/ShaderLoader.h>
@@ -24,17 +24,18 @@
 
 #include <ituGL/scene/ImGuiSceneVisitor.h>
 #include <imgui.h>
+#include <GLFW/glfw3.h>
 
 #include <map>
 #include <string>
 
-SceneViewerApplication::SceneViewerApplication()
-    : Application(1024, 1024, "Scene Viewer demo")
+MarioDitherDemo::MarioDitherDemo()
+    : Application(1024, 1024, "Mario Dithering Demo")
     , m_renderer(GetDevice())
 {
 }
 
-void SceneViewerApplication::Initialize()
+void MarioDitherDemo::Initialize()
 {
     Application::Initialize();
 
@@ -54,7 +55,7 @@ void SceneViewerApplication::Initialize()
     InitializeRenderer();
 }
 
-void SceneViewerApplication::Update()
+void MarioDitherDemo::Update()
 {
     Application::Update();
 
@@ -71,7 +72,7 @@ void SceneViewerApplication::Update()
     m_scene.AcceptVisitor(rendererSceneVisitor);
 }
 
-void SceneViewerApplication::Render()
+void MarioDitherDemo::Render()
 {
     Application::Render();
 
@@ -84,7 +85,7 @@ void SceneViewerApplication::Render()
     RenderGUI();
 }
 
-void SceneViewerApplication::Cleanup()
+void MarioDitherDemo::Cleanup()
 {
     // Cleanup DearImGUI
     m_imGui.Cleanup();
@@ -92,7 +93,7 @@ void SceneViewerApplication::Cleanup()
     Application::Cleanup();
 }
 
-void SceneViewerApplication::InitializeCamera()
+void MarioDitherDemo::InitializeCamera()
 {
     // Create the main camera
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
@@ -109,7 +110,7 @@ void SceneViewerApplication::InitializeCamera()
     m_cameraController.SetCamera(sceneCamera);
 }
 
-void SceneViewerApplication::InitializeLights()
+void MarioDitherDemo::InitializeLights()
 {
     // Create a directional light and add it to the scene
     std::shared_ptr<DirectionalLight> directionalLight = std::make_shared<DirectionalLight>();
@@ -118,7 +119,7 @@ void SceneViewerApplication::InitializeLights()
     m_scene.AddSceneNode(std::make_shared<SceneLight>("directional light", directionalLight));
 }
 
-void SceneViewerApplication::InitializeDefaultMaterial()
+void MarioDitherDemo::InitializeDefaultMaterial()
 {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
@@ -173,7 +174,7 @@ void SceneViewerApplication::InitializeDefaultMaterial()
     m_defaultMaterial->SetStencilTestFunction(Material::TestFunction::Always, 1, 0xFF);
 }
 
-void SceneViewerApplication::InitializeFlagDitherMaterial() {
+void MarioDitherDemo::InitializeFlagDitherMaterial() {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
     vertexShaderPaths.push_back("shaders/version330.glsl");
@@ -244,7 +245,7 @@ void SceneViewerApplication::InitializeFlagDitherMaterial() {
     m_flagDitherMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Replace);
 }
 
-void SceneViewerApplication::InitializeMarioDitherMaterial()
+void MarioDitherDemo::InitializeMarioDitherMaterial()
 {
     // Load and build shader
     std::vector<const char*> vertexShaderPaths;
@@ -311,13 +312,13 @@ void SceneViewerApplication::InitializeMarioDitherMaterial()
     m_marioDitherMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Keep);
 }
 
-void SceneViewerApplication::InitializeMarioPbrMaterial()
+void MarioDitherDemo::InitializeMarioPbrMaterial()
 {
     m_marioPbrMaterial = std::make_shared<Material>(*m_defaultMaterial);
     m_marioPbrMaterial->SetStencilOperations(Material::StencilOperation::Keep, Material::StencilOperation::Keep, Material::StencilOperation::Zero);
 }
 
-void SceneViewerApplication::PrepareLoaderAttributes(ModelLoader* loader)
+void MarioDitherDemo::PrepareLoaderAttributes(ModelLoader* loader)
 {
     // Create a new material copy for each submaterial
     loader->SetCreateMaterials(true);
@@ -339,7 +340,7 @@ void SceneViewerApplication::PrepareLoaderAttributes(ModelLoader* loader)
     loader->SetMaterialProperty(ModelLoader::MaterialProperty::SpecularTexture, "SpecularTexture");
 }
 
-void SceneViewerApplication::InitializeModels()
+void MarioDitherDemo::InitializeModels()
 {
     m_skyboxTexture = TextureCubemapLoader::LoadTextureShared("models/skybox/defaultCubemap.png", TextureObject::FormatRGB, TextureObject::InternalFormatSRGB8);
 
@@ -388,14 +389,14 @@ void SceneViewerApplication::InitializeModels()
     marioTransform->SetScale(glm::vec3(.01f));
 }
 
-void SceneViewerApplication::InitializeRenderer()
+void MarioDitherDemo::InitializeRenderer()
 {
     m_renderer.AddRenderPass(std::make_unique<ForwardRenderPass>());
     m_renderer.AddRenderPass(std::make_unique<MarioDitherRenderPass>(1, *m_marioDitherMaterial));
     m_renderer.AddRenderPass(std::make_unique<SkyboxRenderPass>(m_skyboxTexture));
 }
 
-void SceneViewerApplication::RenderGUI()
+void MarioDitherDemo::RenderGUI()
 {
     m_imGui.BeginFrame();
 

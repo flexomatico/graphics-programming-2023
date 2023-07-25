@@ -1,7 +1,7 @@
-#include "SceneViewerApplication.h"
+#include "MarioDitherDemo.h"
 
 int main()
 {
-    SceneViewerApplication sceneViewerApplication;
-    return sceneViewerApplication.Run();
+    MarioDitherDemo marioDitherDemo;
+    return marioDitherDemo.Run();
 }

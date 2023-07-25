@@ -13,10 +13,10 @@
 class TextureCubemapObject;
 class Material;
 
-class SceneViewerApplication : public Application
+class MarioDitherDemo : public Application
 {
 public:
-    SceneViewerApplication();
+    MarioDitherDemo();
 
 protected:
     void Initialize() override;
