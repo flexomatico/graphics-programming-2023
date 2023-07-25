@@ -1,3 +1,8 @@
-## Graphics Programming Exercises
+## Fake Transparency Using Dithering
 
-This repository contains the exercises of the Graphics Programming course from the IT University of Copenhagen. 
+Exam Project
+Graphics Programming Summer 2023
+IT University of Copenhagen
+
+Felix Möller
+femo@itu.dk
